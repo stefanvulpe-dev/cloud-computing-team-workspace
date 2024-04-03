@@ -9,6 +9,10 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+app.get('/', (req, res) => {
+  res.status(200).send('healthy');
+});
+
 app.use(cors());
 app.use(express.json());
 app.use('/api/v1/auth', authRouter);
