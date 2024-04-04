@@ -10,17 +10,17 @@ import {
 } from '../utils';
 import { RecipeRepository } from '../repositories';
 import { prisma } from '../prisma';
-import { ImageService } from '../services';
+import { cloudStorageService } from '../services';
 
 export async function createRecipe(
   req: z.infer<typeof CreateRecipeRequestSchema>,
   res: ExpressResponse,
 ) {
-  const repository = new RecipeRepository(prisma);
+  const repository = new RecipeRepository(prisma, cloudStorageService);
 
-  const image = await ImageService.getRecipeImage(req.body.title);
+  const file = req.file as unknown as Express.Multer.File;
 
-  const result = await repository.create(req.user.id, { image, ...req.body });
+  const result = await repository.create(req.user.id, { file, ...req.body });
 
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
@@ -33,12 +33,12 @@ export async function createRecipeWithId(
   req: z.infer<typeof CreateRecipeWithIdRequestSchema>,
   res: ExpressResponse,
 ) {
-  const repository = new RecipeRepository(prisma);
+  const repository = new RecipeRepository(prisma, cloudStorageService);
 
-  const image = await ImageService.getRecipeImage(req.body.title);
+  const file = req.file as unknown as Express.Multer.File;
 
   const result = await repository.createWithId(req.params.id, req.user.id, {
-    image,
+    file,
     ...req.body,
   });
 
@@ -50,7 +50,7 @@ export async function createRecipeWithId(
 }
 
 export async function getRecipes(_req: ExpressRequest, res: ExpressResponse) {
-  const repository = new RecipeRepository(prisma);
+  const repository = new RecipeRepository(prisma, cloudStorageService);
   const result = await repository.getAll();
 
   if (!result.isSuccess) {
@@ -61,7 +61,7 @@ export async function getRecipes(_req: ExpressRequest, res: ExpressResponse) {
 }
 
 export async function getRecipe(req: ExpressRequest, res: ExpressResponse) {
-  const repository = new RecipeRepository(prisma);
+  const repository = new RecipeRepository(prisma, cloudStorageService);
   const result = await repository.getById(req.params.id);
 
   if (!result.isSuccess) {
@@ -83,12 +83,12 @@ export async function updateRecipe(
     return res.status(400).json(Result.failWithMessage('Bad request'));
   }
 
-  const repository = new RecipeRepository(prisma);
+  const repository = new RecipeRepository(prisma, cloudStorageService);
 
-  const image = await ImageService.getRecipeImage(req.body.title);
+  const file = req.file as unknown as Express.Multer.File;
 
-  const result = await repository.update(req.params.id, req.user.id, {
-    image,
+  const result = await repository.update(req.params.id, {
+    file,
     ...req.body,
   });
 
@@ -111,28 +111,28 @@ export async function deleteRecipe(req: ExpressRequest, res: ExpressResponse) {
     return res.status(400).json(Result.failWithMessage('Bad request'));
   }
 
-  const repository = new RecipeRepository(prisma);
+  const repository = new RecipeRepository(prisma, cloudStorageService);
   const result = await repository.delete(req.params.id);
 
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
   }
 
-  return res.status(204).json(result);
+  return res.sendStatus(204);
 }
 
 export async function deleteAllRecipes(
   _req: ExpressRequest,
   res: ExpressResponse,
 ) {
-  const repository = new RecipeRepository(prisma);
+  const repository = new RecipeRepository(prisma, cloudStorageService);
   const result = await repository.deleteAll();
 
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
   }
 
-  return res.status(204).json(result);
+  return res.sendStatus(204);
 }
 
 export async function getTrendingRecipes(

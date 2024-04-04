@@ -1,6 +1,15 @@
 import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 
+const multerFileSchema = z.object({
+  fieldname: z.string(),
+  originalname: z.string(),
+  encoding: z.string(),
+  mimetype: z.string(),
+  buffer: z.any().refine((value) => value instanceof Buffer),
+  size: z.number(),
+});
+
 export const CreateRecipeRequestSchema = z.object({
   user: z
     .object({
@@ -16,13 +25,41 @@ export const CreateRecipeRequestSchema = z.object({
     .object({
       title: z.string().min(3),
       description: z.string().min(3),
-      ingredients: z.array(z.string()).min(1),
-      prepTime: z.number().int().positive(),
-      cookTime: z.number().int().positive(),
-      servings: z.number().int().positive(),
-      tags: z.array(z.string()).min(1),
+      ingredients: z
+        .string()
+        .transform((str) => JSON.parse(str))
+        .refine((value: any) => {
+          if (!Array.isArray(value)) {
+            return false;
+          }
+
+          return value.length > 0;
+        }),
+      prepTime: z
+        .string()
+        .transform((value) => parseInt(value))
+        .refine((value) => value > 0),
+      cookTime: z
+        .string()
+        .transform((value) => parseInt(value))
+        .refine((value) => value > 0),
+      servings: z
+        .string()
+        .transform((value) => parseInt(value))
+        .refine((value) => value > 0),
+      tags: z
+        .string()
+        .transform((str) => JSON.parse(str))
+        .refine((value: any) => {
+          if (!Array.isArray(value)) {
+            return false;
+          }
+
+          return value.length > 0;
+        }),
     })
     .required(),
+  file: multerFileSchema,
 });
 
 export const CreateRecipeWithIdRequestSchema = CreateRecipeRequestSchema.extend(

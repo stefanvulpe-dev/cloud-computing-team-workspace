@@ -1,1 +1,2 @@
-export * as ImageService from './ImageService';
+export * from './CloudStorageService';
+export * from './MulterFileUploadService';
