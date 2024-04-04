@@ -7,11 +7,13 @@ import {
   CreateRecipeRequestSchema,
   CreateRecipeWithIdRequestSchema,
   GetRecipeAudioRequestSchema,
+  logger,
   Result,
 } from '../utils';
 import { RecipeRepository } from '../repositories';
 import { prisma } from '../prisma';
 import { TextToSpeechService, cloudStorageService } from '../services';
+import * as fs from 'node:fs';
 
 export async function createRecipe(
   req: z.infer<typeof CreateRecipeRequestSchema>,
@@ -178,18 +180,8 @@ export async function getRecipeAudio(
   req: z.infer<typeof GetRecipeAudioRequestSchema>,
   res: ExpressResponse,
 ) {
-  const repository = new RecipeRepository(prisma, cloudStorageService);
-
-  const result = await repository.getById(req.params.id);
-
-  if (!result.isSuccess) {
-    return res.status(result.statusCode).json(result);
-  }
-
-  const recipe = result.value;
-
   const { audioContent, response } = await TextToSpeechService.synthesizeText(
-    recipe.title + '. ' + recipe.description,
+    req.body.text,
   );
 
   if (!audioContent) {
@@ -198,6 +190,7 @@ export async function getRecipeAudio(
       .json(Result.failWithMessage('Failed to synthesize text'));
   }
 
-  res.set('Content-Type', 'audio/mpeg');
-  return res.status(200).send(audioContent);
+  return res.status(200).json({
+    audioContent: audioContent.toString('base64'),
+  });
 }

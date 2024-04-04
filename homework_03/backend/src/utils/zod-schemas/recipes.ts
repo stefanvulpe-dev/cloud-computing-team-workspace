@@ -73,9 +73,7 @@ export const CreateRecipeWithIdRequestSchema = CreateRecipeRequestSchema.extend(
 );
 
 export const GetRecipeAudioRequestSchema = z.object({
-  params: z.object({
-    id: z.string().refine(ObjectId.isValid, {
-      message: 'Invalid ObjectId',
-    }),
+  body: z.object({
+    text: z.string().min(3),
   }),
 });

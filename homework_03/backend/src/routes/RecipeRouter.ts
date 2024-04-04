@@ -19,6 +19,12 @@ export const recipeRouter = Router();
 recipeRouter.use(validateToken);
 
 recipeRouter.post(
+  '/audio',
+  validateRequest(GetRecipeAudioRequestSchema),
+  requestHandler(RecipeController.getRecipeAudio),
+);
+
+recipeRouter.post(
   '/',
   upload.single('image'),
   validateRequest(CreateRecipeRequestSchema),
@@ -44,12 +50,6 @@ recipeRouter.get(
 recipeRouter.get('/search', requestHandler(RecipeController.searchRecipes));
 
 recipeRouter.get('/:id', requestHandler(RecipeController.getRecipe));
-
-recipeRouter.get(
-  '/:id/audio',
-  validateRequest(GetRecipeAudioRequestSchema),
-  requestHandler(RecipeController.getRecipeAudio),
-);
 
 recipeRouter.put(
   '/:id',
