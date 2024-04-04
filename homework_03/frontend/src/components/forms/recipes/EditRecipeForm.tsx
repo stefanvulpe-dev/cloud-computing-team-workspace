@@ -22,8 +22,9 @@ import { useAxios } from '../../../hooks';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ApiResponse } from '../../../types/ApiResponse.ts';
-import { FileUpload, validateFiles } from '../FileUpload.tsx';
+import { FileUpload } from '../FileUpload.tsx';
 import { FiFile } from 'react-icons/fi';
+import { validateFiles } from '../ValidateFiles.ts';
 
 const EditRecipeSchema = z
   .object({

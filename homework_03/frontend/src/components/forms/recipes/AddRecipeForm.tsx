@@ -22,7 +22,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ApiResponse } from '../../../types/ApiResponse.ts';
 import { TRecipe } from '../../../types';
-import { FileUpload, validateFiles } from '../FileUpload.tsx';
+import { FileUpload } from '../FileUpload.tsx';
+import { validateFiles } from '../ValidateFiles.ts';
 import { FiFile } from 'react-icons/fi';
 
 const RecipeSchema = z
