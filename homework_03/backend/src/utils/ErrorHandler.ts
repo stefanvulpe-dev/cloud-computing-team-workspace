@@ -7,6 +7,7 @@ import {
 } from 'express';
 import jwt from 'jsonwebtoken';
 import { Result } from './Result';
+import multer from 'multer';
 
 export function errorHandler(
   err: any,
@@ -29,6 +30,11 @@ export function errorHandler(
   ) {
     logger.error(err.message);
     return res.status(401).json(Result.failWithMessage(err.message));
+  }
+
+  if (err instanceof multer.MulterError) {
+    logger.error(err.message);
+    return res.status(400).json(Result.failWithMessage(err.message));
   }
 
   if (err instanceof Error) {
