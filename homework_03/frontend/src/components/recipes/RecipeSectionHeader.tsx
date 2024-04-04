@@ -1,5 +1,5 @@
 import { Box, Heading, HStack, IconButton } from '@chakra-ui/react';
-import { RecipeSectionHeaderProps } from '../../../types';
+import { RecipeSectionHeaderProps } from '../../types';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 export function RecipeSectionHeader({

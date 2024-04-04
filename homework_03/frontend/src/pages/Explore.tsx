@@ -77,7 +77,7 @@ export function Explore() {
       };
     }) || [];
 
-  const onSubmit = async (_data: ExploreFormInput) => {
+  const onSubmit = async () => {
     clearErrors();
     await refetch();
     onClose();
