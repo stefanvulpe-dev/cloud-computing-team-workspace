@@ -22,6 +22,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ApiResponse } from '../../../types/ApiResponse.ts';
 import { TRecipe } from '../../../types';
+import { FileUpload, validateFiles } from '../FileUpload.tsx';
+import { FiFile } from 'react-icons/fi';
 
 const RecipeSchema = z
   .object({
@@ -42,6 +44,7 @@ const RecipeSchema = z
       .refine((value) => value.length > 0, {
         message: 'At least one tag is required',
       }),
+    image: z.any(),
   })
   .required();
 
@@ -64,11 +67,12 @@ export function AddRecipeForm({ onModalClose }: { onModalClose: () => void }) {
   const { mutate, isPending, error } = useMutation<
     AxiosResponse<ApiResponse<TRecipe>>,
     AxiosError<ApiResponse<null>>,
-    TRecipeSchema
+    FormData
   >({
     mutationKey: ['recipes', 'addRecipe'],
     mutationFn: (data) => axiosClient.post('/recipes', data),
     onError: (error) => {
+      console.log(error.response?.data);
       for (const key in error.response?.data.validationErrors) {
         setError(key as keyof TRecipeSchema, {
           message: error.response?.data.validationErrors[key].join(', '),
@@ -85,7 +89,18 @@ export function AddRecipeForm({ onModalClose }: { onModalClose: () => void }) {
 
   const onSubmit = (data: TRecipeSchema) => {
     clearErrors();
-    mutate(data);
+
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('ingredients', JSON.stringify(data.ingredients));
+    formData.append('prepTime', data.prepTime.toString());
+    formData.append('cookTime', data.cookTime.toString());
+    formData.append('servings', data.servings.toString());
+    formData.append('tags', JSON.stringify(data.tags));
+    formData.append('image', data.image[0]);
+
+    mutate(formData);
   };
 
   return (
@@ -185,6 +200,24 @@ export function AddRecipeForm({ onModalClose }: { onModalClose: () => void }) {
             <FormErrorMessage>{errors.cookTime.message}</FormErrorMessage>
           ) : (
             <FormHelperText>Time in minutes</FormHelperText>
+          )}
+        </FormControl>
+        <FormControl isRequired isInvalid={!!errors.image}>
+          <FormLabel htmlFor={'image'}>Image</FormLabel>
+          <FileUpload
+            accept={'image/*'}
+            register={register('image', { validate: validateFiles })}
+          >
+            <Button leftIcon={<FiFile />}>Upload</Button>
+          </FileUpload>
+          {errors.image ? (
+            <FormErrorMessage>
+              {errors.image.message as string}
+            </FormErrorMessage>
+          ) : (
+            <FormHelperText>
+              Upload a file. 2MB is the max size allowed
+            </FormHelperText>
           )}
         </FormControl>
         <Button

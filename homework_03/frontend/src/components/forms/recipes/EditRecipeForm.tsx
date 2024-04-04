@@ -22,6 +22,8 @@ import { useAxios } from '../../../hooks';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ApiResponse } from '../../../types/ApiResponse.ts';
+import { FileUpload, validateFiles } from '../FileUpload.tsx';
+import { FiFile } from 'react-icons/fi';
 
 const EditRecipeSchema = z
   .object({
@@ -44,6 +46,7 @@ const EditRecipeSchema = z
         message: 'Must have between 1 and 3 tags',
       })
       .or(z.array(z.string().min(3).max(30))),
+    image: z.any(),
   })
   .required();
 
@@ -73,7 +76,7 @@ export function EditRecipeForm({
   const { mutate, isPending, error } = useMutation<
     AxiosResponse<ApiResponse<TRecipe>>,
     AxiosError<ApiResponse<null>>,
-    TEditRecipeSchema
+    FormData
   >({
     mutationKey: ['recipes', 'addRecipe'],
     mutationFn: (data) => axiosClient.put(`/recipes/${recipe.id}`, data),
@@ -94,7 +97,18 @@ export function EditRecipeForm({
 
   const onSubmit = (data: TEditRecipeSchema) => {
     clearErrors();
-    mutate(data);
+
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('ingredients', JSON.stringify(data.ingredients));
+    formData.append('prepTime', data.prepTime.toString());
+    formData.append('cookTime', data.cookTime.toString());
+    formData.append('servings', data.servings.toString());
+    formData.append('tags', JSON.stringify(data.tags));
+    formData.append('image', data.image[0]);
+
+    mutate(formData);
   };
 
   return (
@@ -194,6 +208,24 @@ export function EditRecipeForm({
             <FormErrorMessage>{errors.cookTime.message}</FormErrorMessage>
           ) : (
             <FormHelperText>Time in minutes</FormHelperText>
+          )}
+        </FormControl>
+        <FormControl isRequired isInvalid={!!errors.image}>
+          <FormLabel htmlFor={'image'}>Image</FormLabel>
+          <FileUpload
+            accept={'image/*'}
+            register={register('image', { validate: validateFiles })}
+          >
+            <Button leftIcon={<FiFile />}>Upload</Button>
+          </FileUpload>
+          {errors.image ? (
+            <FormErrorMessage>
+              {errors.image.message as string}
+            </FormErrorMessage>
+          ) : (
+            <FormHelperText>
+              Upload a file. 2MB is the max size allowed
+            </FormHelperText>
           )}
         </FormControl>
         <Button
