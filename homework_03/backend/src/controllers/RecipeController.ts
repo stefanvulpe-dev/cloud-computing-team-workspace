@@ -6,11 +6,12 @@ import { z } from 'zod';
 import {
   CreateRecipeRequestSchema,
   CreateRecipeWithIdRequestSchema,
+  GetRecipeAudioRequestSchema,
   Result,
 } from '../utils';
 import { RecipeRepository } from '../repositories';
 import { prisma } from '../prisma';
-import { cloudStorageService } from '../services';
+import { TextToSpeechService, cloudStorageService } from '../services';
 
 export async function createRecipe(
   req: z.infer<typeof CreateRecipeRequestSchema>,
@@ -171,4 +172,32 @@ export async function searchRecipes(req: ExpressRequest, res: ExpressResponse) {
   const data = await result.json();
 
   return res.status(200).json(data);
+}
+
+export async function getRecipeAudio(
+  req: z.infer<typeof GetRecipeAudioRequestSchema>,
+  res: ExpressResponse,
+) {
+  const repository = new RecipeRepository(prisma, cloudStorageService);
+
+  const result = await repository.getById(req.params.id);
+
+  if (!result.isSuccess) {
+    return res.status(result.statusCode).json(result);
+  }
+
+  const recipe = result.value;
+
+  const { audioContent, response } = await TextToSpeechService.synthesizeText(
+    recipe.title + '. ' + recipe.description,
+  );
+
+  if (!audioContent) {
+    return res
+      .status(500)
+      .json(Result.failWithMessage('Failed to synthesize text'));
+  }
+
+  res.set('Content-Type', 'audio/mpeg');
+  return res.status(200).send(audioContent);
 }

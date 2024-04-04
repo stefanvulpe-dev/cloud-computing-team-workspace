@@ -7,6 +7,7 @@ import {
 import {
   CreateRecipeRequestSchema,
   CreateRecipeWithIdRequestSchema,
+  GetRecipeAudioRequestSchema,
   requestHandler,
 } from '../utils';
 import { RecipeController } from '../controllers';
@@ -43,6 +44,12 @@ recipeRouter.get(
 recipeRouter.get('/search', requestHandler(RecipeController.searchRecipes));
 
 recipeRouter.get('/:id', requestHandler(RecipeController.getRecipe));
+
+recipeRouter.get(
+  '/:id/audio',
+  validateRequest(GetRecipeAudioRequestSchema),
+  requestHandler(RecipeController.getRecipeAudio),
+);
 
 recipeRouter.put(
   '/:id',
