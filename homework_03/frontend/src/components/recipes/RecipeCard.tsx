@@ -38,6 +38,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               borderRadius="lg"
               alignSelf={'stretch'}
               maxW={'300px'}
+              w={'100%'}
               mx={'auto'}
             />
             <Heading size="md">{recipe.title}</Heading>

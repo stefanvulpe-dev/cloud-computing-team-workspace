@@ -1,8 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { z } from 'zod';
-import { CreateRecipeRequestSchema, Result } from '../utils';
-import { TRecipe } from '../types';
+import { Result } from '../utils';
+import { ICloudStorageService, TCreateRecipe, TRecipe } from '../types';
 
 export class RecipeRepository {
   private prismaClient: PrismaClient<
@@ -10,18 +9,29 @@ export class RecipeRepository {
     never,
     DefaultArgs
   >;
+  private cloudStorageService: ICloudStorageService;
 
   constructor(
     prismaClient: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+    cloudStorageService: ICloudStorageService,
   ) {
     this.prismaClient = prismaClient;
+    this.cloudStorageService = cloudStorageService;
   }
 
-  async create(authorId: string, recipe: TRecipe): Promise<Result<TRecipe>> {
+  async create(
+    authorId: string,
+    recipe: TCreateRecipe,
+  ): Promise<Result<TRecipe>> {
+    const { file, ...recipeProps } = recipe;
+
+    const image = await this.cloudStorageService.uploadObject(file);
+
     const result = await this.prismaClient.recipe.create({
       data: {
         authorId,
-        ...recipe,
+        image,
+        ...recipeProps,
       },
     });
 
@@ -31,7 +41,7 @@ export class RecipeRepository {
   async createWithId(
     id: string,
     authorId: string,
-    recipe: TRecipe,
+    recipe: TCreateRecipe,
   ): Promise<Result<TRecipe>> {
     const result = await this.prismaClient.recipe.findUnique({
       where: {
@@ -43,11 +53,16 @@ export class RecipeRepository {
       return Result.failWithStatusCode('Recipe already exists', 409);
     }
 
+    const { file, ...recipeProps } = recipe;
+
+    const image = await this.cloudStorageService.uploadObject(file);
+
     const newRecipe = await this.prismaClient.recipe.create({
       data: {
         id,
         authorId,
-        ...recipe,
+        image,
+        ...recipeProps,
       },
     });
 
@@ -59,6 +74,10 @@ export class RecipeRepository {
 
     if (result.length === 0) {
       return Result.failWithStatusCode('No recipes found', 404);
+    }
+
+    for (const recipe of result) {
+      recipe.image = await this.cloudStorageService.getObject(recipe.image);
     }
 
     return Result.ok(result, 'Recipes retrieved successfully');
@@ -75,41 +94,76 @@ export class RecipeRepository {
       return Result.failWithStatusCode('Recipe not found', 404);
     }
 
+    result.image = await this.cloudStorageService.getObject(result.image);
+
     return Result.ok(result, 'Recipe retrieved successfully');
   }
 
-  async update(
-    id: string,
-    authorId: string,
-    recipe: TRecipe,
-  ): Promise<Result<TRecipe>> {
+  async update(id: string, recipe: TCreateRecipe): Promise<Result<TRecipe>> {
+    const existingRecipe = await this.prismaClient.recipe.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingRecipe) {
+      return Result.failWithStatusCode('Recipe not found', 404);
+    }
+
+    const { file, ...recipeProps } = recipe;
+
+    await this.cloudStorageService.deleteObject(existingRecipe.image);
+
+    const image = await this.cloudStorageService.uploadObject(file);
+
     const result = await this.prismaClient.recipe.update({
       where: {
         id,
       },
-      data: recipe,
+      data: {
+        image,
+        ...recipeProps,
+      },
     });
-
-    if (!result) {
-      return Result.failWithStatusCode('Recipe not found', 404);
-    }
 
     return Result.ok(result, 'Recipe updated successfully');
   }
 
-  async delete(id: string): Promise<Result<TRecipe>> {
-    const result = await this.prismaClient.recipe.delete({
+  async delete(id: string): Promise<Result<null>> {
+    const existingRecipe = await this.prismaClient.recipe.findUnique({
       where: {
         id,
       },
     });
 
-    return Result.ok(result, 'Recipe deleted successfully');
+    if (!existingRecipe) {
+      return Result.failWithStatusCode('Recipe not found', 404);
+    }
+
+    await this.cloudStorageService.deleteObject(existingRecipe.image);
+
+    await this.prismaClient.recipe.delete({
+      where: {
+        id,
+      },
+    });
+
+    return Result.ok(null, 'Recipe deleted successfully');
   }
 
-  async deleteAll(): Promise<Result<void>> {
+  async deleteAll(): Promise<Result<null>> {
+    const recipes = await this.prismaClient.recipe.findMany();
+
+    if (recipes.length === 0) {
+      return Result.failWithStatusCode('No recipes found', 404);
+    }
+
+    for (const recipe of recipes) {
+      await this.cloudStorageService.deleteObject(recipe.image);
+    }
+
     const result = await this.prismaClient.recipe.deleteMany();
 
-    return Result.ok(undefined, 'Recipes deleted successfully');
+    return Result.ok(null, 'Recipes deleted successfully');
   }
 }
