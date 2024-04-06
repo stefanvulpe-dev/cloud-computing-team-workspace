@@ -12,7 +12,7 @@ import {
 } from '../utils';
 import { RecipeRepository } from '../repositories';
 import { prisma } from '../prisma';
-import { TextToSpeechService, cloudStorageService } from '../services';
+import { RedisService, TextToSpeechService, cloudStorageService } from '../services';
 import * as fs from 'node:fs';
 
 export async function createRecipe(
@@ -28,6 +28,9 @@ export async function createRecipe(
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
   }
+
+  const redisClient = await RedisService.getInstance()
+  await redisClient.del(req.user.id + ":recipes")
 
   return res.status(201).json(result);
 }
@@ -49,21 +52,43 @@ export async function createRecipeWithId(
     return res.status(result.statusCode).json(result);
   }
 
+  const redisClient = await RedisService.getInstance()
+  await redisClient.del(req.user.id + ":recipes")
+
   return res.status(201).json(result);
 }
 
 export async function getRecipes(_req: ExpressRequest, res: ExpressResponse) {
+  const redisClient = await RedisService.getInstance();
+  const redisResult = JSON.parse(await redisClient.get(_req.user?.id + ":recipes"));
+  if (redisResult){
+    const returnResult = Result.ok(redisResult, 'Recipes retrieved successfully');
+    return res.status(200).json(returnResult);
+  }
+
   const repository = new RecipeRepository(prisma, cloudStorageService);
   const result = await repository.getAll();
 
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
   }
+  await redisClient.set(_req.user?.id + ":recipes", JSON.stringify(result.value))
 
   return res.status(200).json(result);
 }
 
 export async function getRecipe(req: ExpressRequest, res: ExpressResponse) {
+  const redisClient = await RedisService.getInstance();
+  const redisResult = JSON.parse(await redisClient.get(req.user?.id + ":recipes"));
+  if (redisResult){
+    const recipe = redisResult.find((obj: { id: string; }) => obj.id === req.params.id)
+    if (recipe){
+      return res.status(200).json(Result.ok(recipe, 'Recipe retrieved successfully.'));
+    } else {
+      res.status(404).json(Result.failWithMessage('Recipe not found.'))
+    }
+  }
+
   const repository = new RecipeRepository(prisma, cloudStorageService);
   const result = await repository.getById(req.params.id);
 
@@ -95,6 +120,9 @@ export async function updateRecipe(
     ...req.body,
   });
 
+  const redisClient = await RedisService.getInstance();
+  await redisClient.del(req.user.id + ":recipes");
+
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
   }
@@ -121,6 +149,9 @@ export async function deleteRecipe(req: ExpressRequest, res: ExpressResponse) {
     return res.status(result.statusCode).json(result);
   }
 
+  const redisClient = await RedisService.getInstance();
+  await redisClient.del(req.user?.id + ":recipes");
+
   return res.sendStatus(204);
 }
 
@@ -134,6 +165,9 @@ export async function deleteAllRecipes(
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
   }
+
+  const redisClient = await RedisService.getInstance();
+  await redisClient.del(_req.user?.id + ":recipes");
 
   return res.sendStatus(204);
 }

@@ -10,7 +10,9 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-await RedisService.getInstance();
+(async () => {
+  await RedisService.getInstance();
+})()
 
 app.use(cors());
 app.use(express.json());
