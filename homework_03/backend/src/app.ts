@@ -3,11 +3,16 @@ import express from 'express';
 import { logger } from './utils';
 import { errorHandler } from './utils';
 import { authRouter, recipeRouter } from './routes';
+import { RedisService } from './services';
 import cors from 'cors';
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+(async () => {
+  await RedisService.getInstance();
+})()
 
 app.use(cors());
 app.use(express.json());
