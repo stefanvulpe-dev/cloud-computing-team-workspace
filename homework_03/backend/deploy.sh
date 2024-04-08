@@ -6,8 +6,6 @@ appName="tasty-bites-be"
 registry="europe-west3-docker.pkg.dev"
 repo="tribal-primer-419117/tasty-bites-be"
 
-npm run build
-
 docker build -t $appName .
 
 docker tag $appName $registry/$repo/$appName:latest

@@ -1,15 +1,16 @@
 import { Response as ExpressResponse } from 'express';
-import { z } from 'zod';
-import { LoginSchema, RegisterSchema, Result } from '../utils';
 import jwt from 'jsonwebtoken';
-import { UserRepository } from '../repositories';
+import { z } from 'zod';
 import { prisma } from '../prisma';
+import { UserRepository } from '../repositories';
+import { LoginSchema, RegisterSchema, Result } from '../utils';
 
 export async function register(
   req: z.infer<typeof RegisterSchema>,
   res: ExpressResponse,
 ) {
   const userRepository = new UserRepository(prisma);
+
   const result = await userRepository.create(req.body);
 
   if (!result.isSuccess) {

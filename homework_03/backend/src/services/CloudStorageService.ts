@@ -6,10 +6,7 @@ class CloudStorageService implements ICloudStorageService {
   private storage: Storage;
 
   constructor() {
-    this.storage = new Storage({
-      projectId: process.env.GCLOUD_PROJECT_ID!,
-      keyFilename: process.env.GCLOUD_STORAGE_ACCOUNT_CREDENTIALS!,
-    });
+    this.storage = new Storage();
   }
 
   async uploadObject(file: Express.Multer.File): Promise<string> {

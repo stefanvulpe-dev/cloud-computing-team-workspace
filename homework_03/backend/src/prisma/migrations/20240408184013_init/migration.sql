@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "recipes" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "ingredients" TEXT[],
@@ -9,7 +9,7 @@ CREATE TABLE "recipes" (
     "prepTime" INTEGER NOT NULL,
     "cookTime" INTEGER NOT NULL,
     "tags" TEXT[],
-    "authorId" INTEGER NOT NULL,
+    "authorId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -18,7 +18,7 @@ CREATE TABLE "recipes" (
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,

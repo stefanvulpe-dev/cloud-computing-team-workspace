@@ -3,11 +3,14 @@ import express from 'express';
 import { logger } from './utils';
 import { errorHandler } from './utils';
 import { authRouter, recipeRouter } from './routes';
+import { RedisService } from './services';
 import cors from 'cors';
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+await RedisService.getInstance();
 
 app.get('/', (req, res) => {
   res.status(200).send('healthy');
