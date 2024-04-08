@@ -99,10 +99,9 @@ export function AddRecipeForm({ onModalClose }: { onModalClose: () => void }) {
     formData.append('cookTime', data.cookTime.toString());
     formData.append('servings', data.servings.toString());
     formData.append('tags', JSON.stringify(data.tags));
-    formData.append(
-      'image',
-      new Blob(data.image[0].file, { type: 'image/jpeg' }),
-    );
+
+    const imageBlob = new Blob([data.image[0]], { type: data.image[0].type });
+    formData.append('image', imageBlob, data.image[0].name);
 
     mutate(formData);
   };
