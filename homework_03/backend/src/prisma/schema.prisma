@@ -9,13 +9,13 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("MONGO_URI")
+  provider = "postgresql"
+  url      = env("POSTGRES_URI")
 }
 
 model Recipe {
   @@map("recipes")
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String        @id @default(uuid())
   title         String
   description   String
   ingredients   String[]
@@ -24,7 +24,7 @@ model Recipe {
   prepTime      Int
   cookTime      Int
   tags          String[]
-  authorId      String    @db.ObjectId
+  authorId      String  
   author        User      @relation(fields: [authorId], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -32,12 +32,12 @@ model Recipe {
 
 model User {
   @@map("users")
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  email         String   @unique
+  id            String        @id @default(uuid())
+  email         String     @unique
   password      String
   firstName     String
   lastName      String
   recipes       Recipe[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }

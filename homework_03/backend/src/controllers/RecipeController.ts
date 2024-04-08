@@ -3,22 +3,28 @@ import {
   Response as ExpressResponse,
 } from 'express';
 import { z } from 'zod';
+import { prisma } from '../prisma';
+import { RecipeRepository } from '../repositories';
+import {
+  RedisService,
+  TextToSpeechService,
+  cloudStorageService,
+} from '../services';
 import {
   CreateRecipeRequestSchema,
   CreateRecipeWithIdRequestSchema,
   GetRecipeAudioRequestSchema,
-  logger,
   Result,
 } from '../utils';
-import { RecipeRepository } from '../repositories';
-import { prisma } from '../prisma';
-import { RedisService, TextToSpeechService, cloudStorageService } from '../services';
-import * as fs from 'node:fs';
 
 export async function createRecipe(
   req: z.infer<typeof CreateRecipeRequestSchema>,
   res: ExpressResponse,
 ) {
+  if (!req.file) {
+    return res.status(400).json(Result.failWithMessage('Image is required'));
+  }
+
   const repository = new RecipeRepository(prisma, cloudStorageService);
 
   const file = req.file as unknown as Express.Multer.File;
@@ -29,8 +35,8 @@ export async function createRecipe(
     return res.status(result.statusCode).json(result);
   }
 
-  const redisClient = await RedisService.getInstance()
-  await redisClient.del(req.user.id + ":recipes")
+  const redisClient = await RedisService.getInstance();
+  await redisClient.del(req.user.id + ':recipes');
 
   return res.status(201).json(result);
 }
@@ -52,17 +58,22 @@ export async function createRecipeWithId(
     return res.status(result.statusCode).json(result);
   }
 
-  const redisClient = await RedisService.getInstance()
-  await redisClient.del(req.user.id + ":recipes")
+  const redisClient = await RedisService.getInstance();
+  await redisClient.del(req.user.id + ':recipes');
 
   return res.status(201).json(result);
 }
 
 export async function getRecipes(_req: ExpressRequest, res: ExpressResponse) {
   const redisClient = await RedisService.getInstance();
-  const redisResult = JSON.parse(await redisClient.get(_req.user?.id + ":recipes"));
-  if (redisResult){
-    const returnResult = Result.ok(redisResult, 'Recipes retrieved successfully');
+  const redisResult = JSON.parse(
+    await redisClient.get(_req.user?.id + ':recipes'),
+  );
+  if (redisResult) {
+    const returnResult = Result.ok(
+      redisResult,
+      'Recipes retrieved successfully',
+    );
     return res.status(200).json(returnResult);
   }
 
@@ -72,20 +83,29 @@ export async function getRecipes(_req: ExpressRequest, res: ExpressResponse) {
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
   }
-  await redisClient.set(_req.user?.id + ":recipes", JSON.stringify(result.value))
+  await redisClient.set(
+    _req.user?.id + ':recipes',
+    JSON.stringify(result.value),
+  );
 
   return res.status(200).json(result);
 }
 
 export async function getRecipe(req: ExpressRequest, res: ExpressResponse) {
   const redisClient = await RedisService.getInstance();
-  const redisResult = JSON.parse(await redisClient.get(req.user?.id + ":recipes"));
-  if (redisResult){
-    const recipe = redisResult.find((obj: { id: string; }) => obj.id === req.params.id)
-    if (recipe){
-      return res.status(200).json(Result.ok(recipe, 'Recipe retrieved successfully.'));
+  const redisResult = JSON.parse(
+    await redisClient.get(req.user?.id + ':recipes'),
+  );
+  if (redisResult) {
+    const recipe = redisResult.find(
+      (obj: { id: string }) => obj.id === req.params.id,
+    );
+    if (recipe) {
+      return res
+        .status(200)
+        .json(Result.ok(recipe, 'Recipe retrieved successfully.'));
     } else {
-      res.status(404).json(Result.failWithMessage('Recipe not found.'))
+      res.status(404).json(Result.failWithMessage('Recipe not found.'));
     }
   }
 
@@ -121,7 +141,7 @@ export async function updateRecipe(
   });
 
   const redisClient = await RedisService.getInstance();
-  await redisClient.del(req.user.id + ":recipes");
+  await redisClient.del(req.user.id + ':recipes');
 
   if (!result.isSuccess) {
     return res.status(result.statusCode).json(result);
@@ -150,7 +170,7 @@ export async function deleteRecipe(req: ExpressRequest, res: ExpressResponse) {
   }
 
   const redisClient = await RedisService.getInstance();
-  await redisClient.del(req.user?.id + ":recipes");
+  await redisClient.del(req.user?.id + ':recipes');
 
   return res.sendStatus(204);
 }
@@ -167,7 +187,7 @@ export async function deleteAllRecipes(
   }
 
   const redisClient = await RedisService.getInstance();
-  await redisClient.del(_req.user?.id + ":recipes");
+  await redisClient.del(_req.user?.id + ':recipes');
 
   return res.sendStatus(204);
 }

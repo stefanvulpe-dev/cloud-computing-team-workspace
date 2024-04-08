@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 
 const multerFileSchema = z.object({
@@ -13,9 +12,7 @@ const multerFileSchema = z.object({
 export const CreateRecipeRequestSchema = z.object({
   user: z
     .object({
-      id: z.string().refine(ObjectId.isValid, {
-        message: 'Invalid ObjectId',
-      }),
+      id: z.string().uuid(),
       email: z.string().email(),
       firstName: z.string().min(3),
       lastName: z.string().min(3),
@@ -59,15 +56,13 @@ export const CreateRecipeRequestSchema = z.object({
         }),
     })
     .required(),
-  file: multerFileSchema,
+  file: multerFileSchema.optional(),
 });
 
 export const CreateRecipeWithIdRequestSchema = CreateRecipeRequestSchema.extend(
   {
     params: z.object({
-      id: z.string().refine(ObjectId.isValid, {
-        message: 'Invalid ObjectId',
-      }),
+      id: z.string().uuid(),
     }),
   },
 );

@@ -1,9 +1,6 @@
 import { TextToSpeechClient, protos } from '@google-cloud/text-to-speech';
 
-const client = new TextToSpeechClient({
-  projectId: process.env.GCLOUD_PROJECT_ID!,
-  keyFilename: process.env.GCLOUD_STORAGE_ACCOUNT_CREDENTIALS!,
-});
+const client = new TextToSpeechClient();
 
 export async function synthesizeText(text: string): Promise<{
   audioContent: Buffer;
