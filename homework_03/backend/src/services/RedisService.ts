@@ -1,7 +1,8 @@
 import { createClient } from 'redis';
 
 const redisConfig = {
-  url: process.env.REDIS_URL,
+  url: `rediss://${process.env.REDIS_HOST_NAME}:${process.env.REDIS_PORT}`,
+  password: process.env.REDIS_ACCESS_KEY
 };
 
 export class RedisService {
