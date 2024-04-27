@@ -1,15 +1,73 @@
-import { Storage } from '@google-cloud/storage';
+import {
+  BlobSASPermissions,
+  BlobServiceClient,
+  StorageSharedKeyCredential,
+  generateBlobSASQueryParameters,
+} from '@azure/storage-blob';
 import { v4 as uuidv4 } from 'uuid';
 import { ICloudStorageService } from '../types';
+import { secretClient } from './azure';
+
+const storageAccountName = await secretClient.getSecret('storage-account-name');
+const storageAccountKey = await secretClient.getSecret('storage-account-key');
 
 class CloudStorageService implements ICloudStorageService {
-  private storage: Storage;
+  // private storage: Storage;
+  private blobServiceClient: BlobServiceClient;
 
   constructor() {
-    this.storage = new Storage();
+    this.blobServiceClient = BlobServiceClient.fromConnectionString(
+      `DefaultEndpointsProtocol=https;AccountName=${storageAccountName.value};AccountKey=${storageAccountKey.value};EndpointSuffix=core.windows.net`,
+    );
   }
 
   async uploadObject(file: Express.Multer.File): Promise<string> {
+    const containerClient =
+      this.blobServiceClient.getContainerClient('recipe-images');
+
+    const blobName = uuidv4();
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+    await blockBlobClient.uploadData(file.buffer, {
+      blobHTTPHeaders: {
+        blobContentType: file.mimetype,
+      },
+    });
+
+    return blobName;
+  }
+
+  async getObject(fileName: string): Promise<string> {
+    const containerClient =
+      this.blobServiceClient.getContainerClient('recipe-images');
+    const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+
+    const sasToken = generateBlobSASQueryParameters(
+      {
+        containerName: 'recipe-images',
+        blobName: fileName,
+        permissions: BlobSASPermissions.parse('r'), // 'r' for read permissions
+        startsOn: new Date(),
+        expiresOn: new Date(new Date().valueOf() + 86400), // 24 hours later
+      },
+      new StorageSharedKeyCredential(
+        storageAccountName.value!,
+        storageAccountKey.value!,
+      ),
+    ).toString();
+
+    return `${blockBlobClient.url}?${sasToken}`;
+  }
+
+  async deleteObject(fileName: string): Promise<void> {
+    const containerClient =
+      this.blobServiceClient.getContainerClient('recipe-images');
+    const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+
+    await blockBlobClient.delete();
+  }
+
+  /*async uploadObject(file: Express.Multer.File): Promise<string> {
     const bucket = this.storage.bucket(process.env.GCLOUD_STORAGE_BUCKET_NAME!);
     const fileName = uuidv4();
     const fileUpload = bucket.file(fileName);
@@ -51,7 +109,7 @@ class CloudStorageService implements ICloudStorageService {
     const file = bucket.file(fileName);
 
     await file.delete();
-  }
+  }*/
 }
 
 export const cloudStorageService = new CloudStorageService();

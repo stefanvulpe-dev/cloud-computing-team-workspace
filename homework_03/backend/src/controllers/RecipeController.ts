@@ -234,7 +234,7 @@ export async function getRecipeAudio(
   req: z.infer<typeof GetRecipeAudioRequestSchema>,
   res: ExpressResponse,
 ) {
-  const { audioContent, response } = await TextToSpeechService.synthesizeText(
+  const { audioContent } = await TextToSpeechService.synthesizeText(
     req.body.text,
   );
 

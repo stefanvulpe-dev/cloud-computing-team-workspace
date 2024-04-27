@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { Result } from '../utils';
 import { ICloudStorageService, TCreateRecipe, TRecipe } from '../types';
+import { Result } from '../utils';
 
 export class RecipeRepository {
   private prismaClient: PrismaClient<
