@@ -1,10 +1,9 @@
+import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-import { logger } from './utils';
-import { errorHandler } from './utils';
 import { authRouter, recipeRouter } from './routes';
 import { RedisService } from './services';
-import cors from 'cors';
+import { errorHandler, logger } from './utils';
 
 const app = express();
 
