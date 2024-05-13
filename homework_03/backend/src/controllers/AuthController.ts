@@ -20,6 +20,7 @@ export async function register(
   return res.json(result);
 }
 
+
 export async function login(
   req: z.infer<typeof LoginSchema>,
   res: ExpressResponse,
