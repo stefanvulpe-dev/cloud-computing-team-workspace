@@ -42,21 +42,7 @@ class CloudStorageService implements ICloudStorageService {
       this.blobServiceClient.getContainerClient('recipe-images');
     const blockBlobClient = containerClient.getBlockBlobClient(fileName);
 
-    const sasToken = generateBlobSASQueryParameters(
-      {
-        containerName: 'recipe-images',
-        blobName: fileName,
-        permissions: BlobSASPermissions.parse('r'), // 'r' for read permissions
-        startsOn: new Date(),
-        expiresOn: new Date(new Date().valueOf() + 86400), // 24 hours later
-      },
-      new StorageSharedKeyCredential(
-        storageAccountName.value!,
-        storageAccountKey.value!,
-      ),
-    ).toString();
-
-    return `${blockBlobClient.url}?${sasToken}`;
+    return blockBlobClient.url;
   }
 
   async deleteObject(fileName: string): Promise<void> {
