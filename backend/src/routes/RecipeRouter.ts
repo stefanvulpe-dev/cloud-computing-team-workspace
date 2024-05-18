@@ -1,18 +1,17 @@
 import { Router } from 'express';
+import { RecipeController } from '../controllers';
 import {
   processRecipeRequest,
   validateRequest,
   validateToken,
 } from '../middlewares';
+import { upload } from '../services';
 import {
   CreateRecipeRequestSchema,
   CreateRecipeWithIdRequestSchema,
   GetRecipeAudioRequestSchema,
   requestHandler,
 } from '../utils';
-import { RecipeController } from '../controllers';
-import { upload } from '../services';
-import { z } from 'zod';
 
 export const recipeRouter = Router();
 
@@ -39,7 +38,6 @@ recipeRouter.use(validateToken);
  *       '500':
  *         description: Internal server error
  */
-
 
 recipeRouter.post(
   '/audio',
@@ -212,7 +210,6 @@ recipeRouter.get('/search', requestHandler(RecipeController.searchRecipes));
 
 recipeRouter.get('/:id', requestHandler(RecipeController.getRecipe));
 
-
 /**
  * @openapi
  * /api/v1/recipes:
@@ -251,7 +248,6 @@ recipeRouter.put(
 );
 
 recipeRouter.put('/', requestHandler(RecipeController.updateAllRecipes));
-
 
 /**
  * @openapi
