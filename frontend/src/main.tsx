@@ -3,14 +3,18 @@ import ReactDOM from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
 import {
   Explore,
-  Home,
+  TrendingRecipes,
   Landing,
   Login,
   NotFound,
   Recipes,
   Register,
 } from './pages';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import { HomeRootLayout } from './layouts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, RequireAuth } from './components/auth';
@@ -44,7 +48,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/home',
-        element: <Home />,
+        element: <Navigate to="/home/trending" replace={true} />,
+      },
+      {
+        path: '/home/trending',
+        element: <TrendingRecipes />,
       },
       {
         path: '/home/explore',

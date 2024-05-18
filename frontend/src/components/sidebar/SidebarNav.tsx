@@ -22,7 +22,7 @@ export function SidebarNav() {
       <ListItem fontSize={'1.25rem'}>
         <ChakraLink
           as={NavLink}
-          to={'/home'}
+          to={'/home/trending'}
           _activeLink={{ color: 'gray.500' }}
         >
           <HStack>

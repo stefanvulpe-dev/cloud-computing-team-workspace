@@ -1,7 +1,7 @@
 import { Stack } from '@chakra-ui/react';
 import { RecipeSection } from '../components';
 
-export function Home() {
+export function TrendingRecipes() {
   return (
     <Stack spacing={10} mx={'auto'} mt={10}>
       <RecipeSection
