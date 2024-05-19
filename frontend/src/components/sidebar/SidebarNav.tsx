@@ -12,6 +12,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { BiFoodMenu } from 'react-icons/bi';
 import { MdLogout } from 'react-icons/md';
 import { useLocalStorage } from '../../hooks';
+import { FaQuestionCircle } from 'react-icons/fa';
 
 export function SidebarNav() {
   const { removeItem } = useLocalStorage();
@@ -64,6 +65,18 @@ export function SidebarNav() {
           <HStack>
             <ListIcon as={FaRobot} />
             <Text>Assistant</Text>
+          </HStack>
+        </ChakraLink>
+      </ListItem>
+      <ListItem fontSize={'1.25rem'}>
+        <ChakraLink
+          as={NavLink}
+          to={'/home/faq'}
+          _activeLink={{ color: 'gray.500' }}
+        >
+          <HStack>
+            <ListIcon as={FaQuestionCircle} />
+            <Text>FAQ</Text>
           </HStack>
         </ChakraLink>
       </ListItem>
