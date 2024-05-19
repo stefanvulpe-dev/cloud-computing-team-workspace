@@ -7,7 +7,7 @@ import {
   Text,
   Button,
 } from '@chakra-ui/react';
-import { FaHome, FaRegCompass } from 'react-icons/fa';
+import { FaHome, FaRegCompass, FaRobot } from 'react-icons/fa';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { BiFoodMenu } from 'react-icons/bi';
 import { MdLogout } from 'react-icons/md';
@@ -52,6 +52,18 @@ export function SidebarNav() {
           <HStack>
             <ListIcon as={BiFoodMenu} />
             <Text>Your recipes</Text>
+          </HStack>
+        </ChakraLink>
+      </ListItem>
+      <ListItem fontSize={'1.25rem'}>
+        <ChakraLink
+          as={NavLink}
+          to={'/home/assistant'}
+          _activeLink={{ color: 'gray.500' }}
+        >
+          <HStack>
+            <ListIcon as={FaRobot} />
+            <Text>Assistant</Text>
           </HStack>
         </ChakraLink>
       </ListItem>

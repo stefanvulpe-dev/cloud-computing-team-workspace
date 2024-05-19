@@ -9,6 +9,7 @@ import {
   NotFound,
   Recipes,
   Register,
+  Assistant,
 } from './pages';
 import {
   createBrowserRouter,
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: '/home/recipes',
         element: <Recipes />,
+      },
+      {
+        path: '/home/assistant',
+        element: <Assistant />,
       },
     ],
   },
