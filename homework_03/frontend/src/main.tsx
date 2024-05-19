@@ -9,6 +9,7 @@ import {
   NotFound,
   Recipes,
   Register,
+  FAQ,
 } from './pages';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HomeRootLayout } from './layouts';
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
         path: '/home/recipes',
         element: <Recipes />,
       },
+      {
+        path: '/home/faq',
+        element: <FAQ />,
+      }
     ],
   },
 ]);
