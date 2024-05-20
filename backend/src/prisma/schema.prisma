@@ -47,4 +47,7 @@ model Feedback {
   id            String        @id @default(uuid())
   email         String
   message       String
+  rating        Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }

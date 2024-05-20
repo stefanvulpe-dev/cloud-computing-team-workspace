@@ -1,24 +1,28 @@
-import {
-     Request as ExpressRequest,
-     Response as ExpressResponse,
-} from 'express';
+import { Response as ExpressResponse } from 'express';
 
 import { z } from 'zod';
 import { prisma } from '../prisma';
 import { FeedbackRepository } from '../repositories';
-import { CreateFeedbackRequestSchema, Result } from '../utils';
+import { MailService } from '../services';
+import { CreateFeedbackRequestSchema } from '../utils';
 
 export async function createFeedback(
-     req: z.infer<typeof CreateFeedbackRequestSchema>,
-     res: ExpressResponse,
+  req: z.infer<typeof CreateFeedbackRequestSchema>,
+  res: ExpressResponse,
 ) {
-     const repository = new FeedbackRepository(prisma);
+  const mailResult = await MailService.sendEmail(req.body);
 
-     const result = await repository.create(req.body);
+  if (!mailResult.isSuccess) {
+    return res.status(mailResult.statusCode).json(mailResult);
+  }
 
-     if (!result.isSuccess) {
-          return res.status(result.statusCode).json(result);
-     }
+  const repository = new FeedbackRepository(prisma);
 
-     return res.status(201).json(result);
+  const result = await repository.create(req.body);
+
+  if (!result.isSuccess) {
+    return res.status(result.statusCode).json(result);
+  }
+
+  return res.status(201).json(result);
 }

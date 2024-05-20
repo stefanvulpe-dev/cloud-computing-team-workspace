@@ -21,10 +21,14 @@ import { z } from 'zod';
  *           default: "Feedback message"
  */
 
-
 export const CreateFeedbackRequestSchema = z.object({
-     body: z.object({
-          email: z.string().email(),
-          feedback: z.string().min(1)
-     }).required()
+  body: z
+    .object({
+      email: z.string().email(),
+      firstName: z.string(),
+      lastName: z.string(),
+      rating: z.number(),
+      message: z.string(),
+    })
+    .required(),
 });

@@ -1,13 +1,9 @@
-import { Router } from "express";
-import { FeedbackController } from "../controllers";
-import { validateRequest, validateToken } from "../middlewares";
-import {
-     CreateFeedbackRequestSchema,
-     requestHandler,
- } from "../utils";
-export const feedbackRouter = Router();
+import { Router } from 'express';
+import { FeedbackController } from '../controllers';
+import { validateRequest } from '../middlewares';
+import { CreateFeedbackRequestSchema, requestHandler } from '../utils';
 
-feedbackRouter.use(validateToken);
+export const feedbackRouter = Router();
 
 /**
  * @openapi
@@ -31,9 +27,8 @@ feedbackRouter.use(validateToken);
  *         description: Internal server error
  */
 
-
 feedbackRouter.post(
-     '/',
-     validateRequest(CreateFeedbackRequestSchema),
-     requestHandler(FeedbackController.createFeedback),
+  '/',
+  validateRequest(CreateFeedbackRequestSchema),
+  requestHandler(FeedbackController.createFeedback),
 );
