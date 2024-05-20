@@ -1,9 +1,9 @@
 import {
-  Text,
-  Heading,
-  Link as ChakraLink,
-  Stack,
   Center,
+  Link as ChakraLink,
+  Heading,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 

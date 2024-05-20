@@ -1,26 +1,26 @@
+import { ChakraProvider } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ChakraProvider } from '@chakra-ui/react';
 import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter,
+} from 'react-router-dom';
+import { AuthProvider, RequireAuth } from './components/auth';
+import { HomeRootLayout } from './layouts';
+import {
+  Assistant,
   Explore,
-  TrendingRecipes,
+  FAQ,
+  Feedback,
   Landing,
   Login,
   NotFound,
   Recipes,
   Register,
-  FAQ,
-  Assistant,
-  Feedback,
+  TrendingRecipes,
 } from './pages';
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from 'react-router-dom';
-import { HomeRootLayout } from './layouts';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider, RequireAuth } from './components/auth';
 
 const queryClient = new QueryClient();
 

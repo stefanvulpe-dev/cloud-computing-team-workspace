@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/react';
 import { Hero, LandingNav } from '../layouts';
+import { BuyMeACoffeeWidget } from '../components';
 
 export function Landing() {
   return (
@@ -13,6 +14,7 @@ export function Landing() {
     >
       <LandingNav />
       <Hero />
+      <BuyMeACoffeeWidget />
     </Box>
   );
 }
