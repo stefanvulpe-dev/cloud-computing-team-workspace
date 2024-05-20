@@ -11,6 +11,7 @@ import {
   Register,
   FAQ,
   Assistant,
+  Feedback,
 } from './pages';
 import {
   createBrowserRouter,
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
     path: '/register',
     element: <Register />,
     errorElement: <NotFound />,
+  },
+  {
+    path: '/feedback',
+    element: <Feedback />,
   },
   {
     path: '/home',

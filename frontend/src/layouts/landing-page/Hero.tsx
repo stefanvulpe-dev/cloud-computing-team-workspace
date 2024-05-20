@@ -68,6 +68,27 @@ export function Hero() {
         >
           Click here to go to the home page
         </ChakraLink>
+        <ChakraLink
+          as={ReactRouterLink}
+          to={'/feedback'}
+          w={'max-content'}
+          mx={'auto'}
+          fontWeight={'semibold'}
+          backgroundColor={'transparent'}
+          backdropFilter={'blur(10px)'}
+          color={'white'}
+          rounded={'lg'}
+          px={4}
+          py={2}
+          border={'2px solid'}
+          borderColor={'white'}
+          _hover={{
+            backgroundColor: 'white',
+            color: 'black',
+          }}
+        >
+          Provide feedback
+        </ChakraLink>
       </Stack>
     </Center>
   );
