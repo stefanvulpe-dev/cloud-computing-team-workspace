@@ -15,7 +15,7 @@ export function AppLogo({ logoWidth }: { logoWidth: string }) {
           px={10}
           rounded={'full'}
           border={'2px solid'}
-          borderColor={'gray.500'}
+          borderColor={'black'}
         />
       </ChakraLink>
     </Center>
