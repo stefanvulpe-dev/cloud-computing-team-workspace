@@ -53,8 +53,7 @@ export function RecipeManageSectionHeader({
             fontWeight={'semibold'}
             fontSize={{
               base: '1rem',
-              md: '1.25rem',
-              lg: '1.35rem',
+              xl: '1.35rem',
             }}
           >
             {title}

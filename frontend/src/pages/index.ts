@@ -4,3 +4,6 @@ export * from './auth';
 export * from './TrendingRecipes.tsx';
 export * from './Explore.tsx';
 export * from './Recipes.tsx';
+export * from './Faq.tsx';
+export * from './Assistant.tsx';
+export * from './Feedback.tsx';

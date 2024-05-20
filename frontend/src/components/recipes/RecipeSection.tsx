@@ -1,4 +1,10 @@
-import { Box, useBreakpointValue } from '@chakra-ui/react';
+import {
+  Box,
+  HStack,
+  useBreakpointValue,
+  Text,
+  Spinner,
+} from '@chakra-ui/react';
 import { RecipeSectionHeader } from './RecipeSectionHeader.tsx';
 import { RecipePagination } from './RecipePagination.tsx';
 import { useEffect, useState } from 'react';
@@ -88,7 +94,10 @@ export function RecipeSection({ title, subtitle }: RecipeSectionProps) {
   return (
     <>
       {isFetching ? (
-        <Box>Loading...</Box>
+        <HStack alignItems={'center'}>
+          <Spinner thickness="4px" color={'blue.500'} />
+          <Text>Loading...</Text>
+        </HStack>
       ) : (
         <Box>
           <RecipeSectionHeader

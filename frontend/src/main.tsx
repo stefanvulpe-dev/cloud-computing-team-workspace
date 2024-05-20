@@ -9,6 +9,9 @@ import {
   NotFound,
   Recipes,
   Register,
+  FAQ,
+  Assistant,
+  Feedback,
 } from './pages';
 import {
   createBrowserRouter,
@@ -38,6 +41,10 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
   },
   {
+    path: '/feedback',
+    element: <Feedback />,
+  },
+  {
     path: '/home',
     element: (
       <RequireAuth>
@@ -61,6 +68,14 @@ const router = createBrowserRouter([
       {
         path: '/home/recipes',
         element: <Recipes />,
+      },
+      {
+        path: '/home/faq',
+        element: <FAQ />,
+      },
+      {
+        path: '/home/assistant',
+        element: <Assistant />,
       },
     ],
   },

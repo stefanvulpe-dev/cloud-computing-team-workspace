@@ -228,6 +228,8 @@ export function AddRecipeForm({ onModalClose }: { onModalClose: () => void }) {
           colorScheme={'blue'}
           type={'submit'}
           isDisabled={isPending}
+          isLoading={isPending}
+          loadingText={'Submitting...'}
         >
           Submit
         </Button>
