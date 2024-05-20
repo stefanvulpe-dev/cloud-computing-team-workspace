@@ -41,3 +41,10 @@ model User {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
+
+model Feedback {
+  @@map("feedback")
+  id            String        @id @default(uuid())
+  email         String
+  message       String
+}

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
-import { assistantRouter, authRouter, recipeRouter } from './routes';
+import { assistantRouter, authRouter, recipeRouter, feedbackRouter } from './routes';
 import { RedisService } from './services';
 import { errorHandler, logger } from './utils';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -68,6 +68,7 @@ app.use(express.json());
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/assistant', assistantRouter);
+app.use('/api/v1/feedback', feedbackRouter);
 
 // Error handling middleware
 app.use(errorHandler);
