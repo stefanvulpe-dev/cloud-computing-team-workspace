@@ -4,21 +4,28 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Link as ChakraLink,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
   Input,
+  InputGroup,
+  InputLeftAddon,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Stack,
-  useToast,
-  Link as ChakraLink,
   Textarea,
+  useToast,
 } from '@chakra-ui/react';
-import { Link as ReactRouterLink } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useForm } from 'react-hook-form';
+import { Link as ReactRouterLink } from 'react-router-dom';
 import { z } from 'zod';
 import { useAxios } from '../../hooks';
 import { ApiResponse } from '../../types/ApiResponse';
@@ -27,6 +34,7 @@ const FeedbackFormSchema = z.object({
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
+  rating: z.number().min(1).max(5),
   message: z.string().min(25).max(500),
 });
 
@@ -79,7 +87,7 @@ export function FeedbackForm() {
   };
 
   return (
-    <Card align={'center'} w={'100% '} boxShadow={'2xl'}>
+    <Card align={'center'} w={'100%'} boxShadow={'2xl'}>
       <CardHeader>
         <Heading
           as={'h2'}
@@ -118,6 +126,27 @@ export function FeedbackForm() {
               <Input id={'lastName'} {...register('lastName')} type="text" />
               {errors.lastName && (
                 <FormErrorMessage>{errors.lastName.message}</FormErrorMessage>
+              )}
+            </FormControl>
+            <FormControl isInvalid={!!errors.rating} isRequired={true}>
+              <FormLabel htmlFor={'rating'}>Rating</FormLabel>
+              <InputGroup>
+                <InputLeftAddon pointerEvents="none">⭐</InputLeftAddon>
+                <NumberInput defaultValue={''} min={1} max={5} w={'100%'}>
+                  <NumberInputField
+                    id={'rating'}
+                    {...register('rating', {
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </InputGroup>
+              {errors.rating && (
+                <FormErrorMessage>{errors.rating.message}</FormErrorMessage>
               )}
             </FormControl>
             <FormControl isInvalid={!!errors.message} isRequired={true}>
