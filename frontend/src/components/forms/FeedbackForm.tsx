@@ -140,7 +140,7 @@ export function FeedbackForm() {
         </form>
       </CardBody>
       <CardFooter>
-        <ChakraLink as={ReactRouterLink} to={'/home'}>
+        <ChakraLink as={ReactRouterLink} to={'/'}>
           Back to home
         </ChakraLink>
       </CardFooter>
