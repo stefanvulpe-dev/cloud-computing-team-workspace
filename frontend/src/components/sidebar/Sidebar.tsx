@@ -27,6 +27,7 @@ export function Sidebar() {
           p={10}
           bg={'white'}
           alignSelf={'stretch'}
+          position={'relative'}
         >
           <SidebarContent />
         </Stack>

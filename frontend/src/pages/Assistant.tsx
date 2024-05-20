@@ -12,6 +12,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ApiResponse } from '../types/ApiResponse';
 import { axiosClient } from '../api';
+import { IoSend } from 'react-icons/io5';
 
 interface Message {
   text: string;
@@ -68,12 +69,11 @@ export function Assistant() {
   return (
     <Stack
       justifyContent="space-between"
+      flex={2}
       spacing={10}
-      pt={12}
       pb={6}
-      pr={10}
-      minH="100vh"
-      width="100%"
+      mx={6}
+      mt={4}
     >
       <Heading
         as="h2"
@@ -121,7 +121,13 @@ export function Assistant() {
             ref={inputRef}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
-          <Button onClick={handleSendMessage} colorScheme="blue">
+          <Button
+            leftIcon={<IoSend />}
+            onClick={handleSendMessage}
+            colorScheme="blue"
+            isLoading={isRequestingResponse}
+            loadingText="Sending"
+          >
             Send
           </Button>
         </HStack>

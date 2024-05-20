@@ -107,6 +107,14 @@ export function EditRecipeForm({
     formData.append('cookTime', data.cookTime.toString());
     formData.append('servings', data.servings.toString());
     formData.append('tags', JSON.stringify(data.tags));
+
+    if (!data.image) {
+      setError('image', {
+        message: 'Image is required',
+      });
+      return;
+    }
+
     formData.append('image', data.image[0]);
 
     mutate(formData);
@@ -234,6 +242,8 @@ export function EditRecipeForm({
           colorScheme={'blue'}
           type={'submit'}
           isDisabled={isPending}
+          isLoading={isPending}
+          loadingText={'Submitting'}
         >
           Submit
         </Button>

@@ -22,7 +22,7 @@ export function FAQ() {
   );
 
   return (
-    <div style={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
+    <Box flex={2} width={'100%'} maxW={'62.5rem'} mx={'auto'}>
       <Box p={5} bg="gray.100">
         <Flex
           direction="column"
@@ -67,7 +67,7 @@ export function FAQ() {
           </Stack>
         </Accordion>
       </Box>
-    </div>
+    </Box>
   );
 }
 

@@ -1,4 +1,4 @@
-import { SimpleGrid } from '@chakra-ui/react';
+import { HStack, SimpleGrid, Spinner, Text } from '@chakra-ui/react';
 import { RecipeManageCard } from './RecipeManageCard.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -9,7 +9,7 @@ import { useAxios } from '../../../hooks';
 export function RecipeManageSection() {
   const axiosClient = useAxios();
 
-  const { data, isPending, isError, error } = useQuery<
+  const { data, isFetching, isError, error } = useQuery<
     AxiosResponse<ApiResponse<TRecipe[]>>,
     AxiosError<ApiResponse<null>>
   >({
@@ -18,8 +18,13 @@ export function RecipeManageSection() {
     retry: 1,
   });
 
-  if (isPending) {
-    return <div>Loading...</div>;
+  if (isFetching) {
+    return (
+      <HStack alignItems={'center'}>
+        <Spinner thickness="4px" color={'blue.500'} />
+        <Text>Loading...</Text>
+      </HStack>
+    );
   }
 
   if (isError) {
